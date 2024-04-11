@@ -191,11 +191,11 @@ const Index = () => {
       <Text fontSize="xl" mb={4}>
         Othello Game - Current Player: {currentPlayer.toUpperCase()}
       </Text>
-      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={1}>
+      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={0}>
         {board.map((row, x) =>
           row.map((cell, y) => (
-            <GridItem key={`${x}-${y}`} w="40px" h="40px" bg="green.500" onClick={() => placePiece(x, y)}>
-              {cell && <FaCircle color={cell === "black" ? "black" : "white"} />}
+            <GridItem key={`${x}-${y}`} w="50px" h="50px" bg="green.500" onClick={() => placePiece(x, y)}>
+              {cell && <FaCircle color={cell === "black" ? "black" : "white"} size="30px" />}
             </GridItem>
           )),
         )}

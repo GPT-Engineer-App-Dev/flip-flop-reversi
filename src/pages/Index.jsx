@@ -161,7 +161,7 @@ const Index = () => {
         {board.map((row, x) =>
           row.map((cell, y) => (
             <GridItem key={`${x}-${y}`} w="40px" h="40px" bg="green.500" onClick={() => placePiece(x, y)} display="flex" justifyContent="center" alignItems="center">
-              {cell && <FaCircle color={cell === "black" ? "black" : "white"} size="30px" />}
+              {cell && <FaCircle color={cell === "black" ? "black" : "white"} size="35px" />}
             </GridItem>
           )),
         )}

@@ -142,12 +142,47 @@ const Index = () => {
       }
     });
 
-    setBoard(newBoard);
+    setBoard((prevBoard) => {
+      const newBoard = prevBoard.map((row) => [...row]);
+      newBoard[x][y] = currentPlayer;
+      const directions = [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+      ];
+
+      directions.forEach(([dx, dy]) => {
+        let i = x + dx,
+          j = y + dy,
+          piecesToFlip = [];
+        while (i >= 0 && i < boardSize && j >= 0 && j < boardSize && newBoard[i][j] === (currentPlayer === "black" ? "white" : "black")) {
+          piecesToFlip.push([i, j]);
+          i += dx;
+          j += dy;
+        }
+        if (i >= 0 && i < boardSize && j >= 0 && j < boardSize && newBoard[i][j] === currentPlayer) {
+          piecesToFlip.forEach(([pi, pj]) => {
+            newBoard[pi][pj] = currentPlayer;
+          });
+        }
+      });
+
+      return newBoard;
+    });
+
     if (isPlayer) {
-      setCurrentPlayer(currentPlayer === "black" ? "white" : "black");
-      if (isAIEnabled && currentPlayer === "white") {
-        setTimeout(aiMove, 1000);
-      }
+      setCurrentPlayer((prevPlayer) => {
+        const nextPlayer = prevPlayer === "black" ? "white" : "black";
+        if (isAIEnabled && nextPlayer === "white") {
+          setTimeout(aiMove, 1000);
+        }
+        return nextPlayer;
+      });
     }
   };
 

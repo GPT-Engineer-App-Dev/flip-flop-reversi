@@ -177,8 +177,8 @@ const Index = () => {
 
     if (isPlayer) {
       setCurrentPlayer((prevPlayer) => {
-        const nextPlayer = prevPlayer === "black" ? "white" : "black";
-        if (isAIEnabled && nextPlayer === "white") {
+        const nextPlayer = "black";
+        if (isAIEnabled) {
           setTimeout(aiMove, 1000);
         }
         return nextPlayer;
@@ -210,8 +210,15 @@ const Index = () => {
       >
         Restart Game
       </Button>
-      <Button mt={4} colorScheme="teal" onClick={() => setIsAIEnabled(!isAIEnabled)}>
-        {isAIEnabled ? "Play against Human" : "Play against AI"}
+      <Button
+        mt={4}
+        colorScheme="teal"
+        onClick={() => {
+          setIsAIEnabled(!isAIEnabled);
+          setCurrentPlayer("black");
+        }}
+      >
+        {isAIEnabled ? "Disable AI" : "Enable AI"}
       </Button>
     </Box>
   );

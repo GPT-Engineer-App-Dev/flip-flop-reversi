@@ -1,6 +1,6 @@
 # flip-flop-reversi
 
-Implement an interactive Othello game on the website. The game should allow two players to play against each other on the same device. Include a simple user interface with a grid representing the Othello board and controls for player moves.
+Redesign and reimplement the Othello game from scratch. Focus on creating a clean and functional UI with proper spacing and sizing. Ensure the game mechanics work flawlessly with both AI and human opponents, and address previous issues with state handling and visual layout.
 
 ## Collaborate with GPT Engineer
 

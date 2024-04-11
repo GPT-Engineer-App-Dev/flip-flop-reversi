@@ -1,63 +1,45 @@
-import { useState } from "react";
-import { Box, Grid, GridItem, Button, Text, useToast } from "@chakra-ui/react";
-import { FaCircle } from "react-icons/fa";
+// Othello Game Implementation with Chakra UI and React Icons
+import { Box, Button, Flex, Grid, Text, useToast } from "@chakra-ui/react";
+import { FaRobot, FaUserFriends } from "react-icons/fa";
+import { useState, useEffect } from "react";
+
+const boardSize = 8; // Othello board is 8x8
+
+// Helper function to initialize the game board
+const initializeBoard = () => {
+  const board = Array(boardSize)
+    .fill(null)
+    .map(() => Array(boardSize).fill(null));
+  // Setting up the four initial pieces
+  board[3][3] = "W";
+  board[3][4] = "B";
+  board[4][3] = "B";
+  board[4][4] = "W";
+  return board;
+};
+
+// Component for individual cells on the board
+const Cell = ({ value, onClick }) => {
+  const bgColor = value === "B" ? "black" : value === "W" ? "white" : "green.200";
+  const color = value === "W" ? "black" : "white";
+  return (
+    <Button onClick={onClick} bgColor={bgColor} color={color} height="40px" width="40px">
+      {value}
+    </Button>
+  );
+};
 
 const Index = () => {
-  const boardSize = 8;
-  const initialBoard = () => {
-    const mid = boardSize / 2;
-    let board = Array(boardSize)
-      .fill()
-      .map(() => Array(boardSize).fill(null));
-    board[mid - 1][mid - 1] = "white";
-    board[mid][mid] = "white";
-    board[mid - 1][mid] = "black";
-    board[mid][mid - 1] = "black";
-    return board;
-  };
-
-  const [board, setBoard] = useState(initialBoard());
-  const [currentPlayer, setCurrentPlayer] = useState("black");
+  const [board, setBoard] = useState(initializeBoard());
+  const [currentPlayer, setCurrentPlayer] = useState("B"); // B for Black, W for White
   const toast = useToast();
 
-  const isValidMove = (x, y) => {
-    if (board[x][y] !== null) return false;
-    let valid = false;
-    const directions = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ];
-
-    directions.forEach(([dx, dy]) => {
-      let i = x + dx,
-        j = y + dy,
-        validDir = false;
-      while (i >= 0 && i < boardSize && j >= 0 && j < boardSize && board[i][j] === (currentPlayer === "black" ? "white" : "black")) {
-        i += dx;
-        j += dy;
-        if (i >= 0 && i < boardSize && j >= 0 && j < boardSize && board[i][j] === currentPlayer) {
-          validDir = true;
-        }
-      }
-      if (validDir) {
-        valid = true;
-      }
-    });
-
-    return valid;
-  };
-
-  const placePiece = (x, y) => {
-    if (!isValidMove(x, y)) {
+  // Function to handle cell click
+  const handleCellClick = (row, col) => {
+    if (board[row][col] !== null) {
       toast({
-        title: "Invalid move",
-        description: "You can't place a piece here.",
+        title: "Invalid move.",
+        description: "You must place your piece on an empty spot.",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -65,57 +47,39 @@ const Index = () => {
       return;
     }
 
-    const newBoard = board.map((row) => [...row]);
-    newBoard[x][y] = currentPlayer;
-    const directions = [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ];
-
-    directions.forEach(([dx, dy]) => {
-      let i = x + dx,
-        j = y + dy,
-        piecesToFlip = [];
-      while (i >= 0 && i < boardSize && j >= 0 && j < boardSize && newBoard[i][j] === (currentPlayer === "black" ? "white" : "black")) {
-        piecesToFlip.push([i, j]);
-        i += dx;
-        j += dy;
-      }
-      if (i >= 0 && i < boardSize && j >= 0 && j < boardSize && newBoard[i][j] === currentPlayer) {
-        piecesToFlip.forEach(([pi, pj]) => {
-          newBoard[pi][pj] = currentPlayer;
-        });
-      }
-    });
-
+    // Place the piece on the board
+    const newBoard = [...board];
+    newBoard[row][col] = currentPlayer;
     setBoard(newBoard);
-    setCurrentPlayer(currentPlayer === "black" ? "white" : "black");
+    setCurrentPlayer(currentPlayer === "B" ? "W" : "B"); // Switch turns
+  };
+
+  // Render the game board
+  const renderBoard = () => {
+    return board.map((row, rowIndex) => (
+      <Grid templateColumns="repeat(8, 1fr)" gap={1} key={rowIndex}>
+        {row.map((cell, colIndex) => (
+          <Cell key={`${rowIndex}-${colIndex}`} value={cell} onClick={() => handleCellClick(rowIndex, colIndex)} />
+        ))}
+      </Grid>
+    ));
   };
 
   return (
-    <Box p={5}>
-      <Text fontSize="xl" mb={4}>
-        Othello Game - Current Player: {currentPlayer.toUpperCase()}
+    <Flex direction="column" align="center" justify="center" h="100vh">
+      <Text fontSize="2xl" mb={4}>
+        Othello Game
       </Text>
-      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={1}>
-        {board.map((row, x) =>
-          row.map((cell, y) => (
-            <GridItem key={`${x}-${y}`} w="40px" h="40px" bg="green.500" onClick={() => placePiece(x, y)}>
-              {cell && <FaCircle color={cell === "black" ? "black" : "white"} />}
-            </GridItem>
-          )),
-        )}
-      </Grid>
-      <Button mt={4} colorScheme="blue" onClick={() => setBoard(initialBoard())}>
-        Restart Game
-      </Button>
-    </Box>
+      <Box>{renderBoard()}</Box>
+      <Flex mt={4}>
+        <Button leftIcon={<FaUserFriends />} colorScheme="teal" variant="solid" mr={2}>
+          Play with friend
+        </Button>
+        <Button leftIcon={<FaRobot />} colorScheme="orange" variant="solid">
+          Play with AI
+        </Button>
+      </Flex>
+    </Flex>
   );
 };
 

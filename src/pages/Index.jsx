@@ -191,10 +191,10 @@ const Index = () => {
       <Text fontSize="xl" mb={4}>
         Othello Game - Current Player: {currentPlayer.toUpperCase()}
       </Text>
-      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={0}>
+      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={2} justifyItems="center" alignItems="center" p={5}>
         {board.map((row, x) =>
           row.map((cell, y) => (
-            <GridItem key={`${x}-${y}`} w="50px" h="50px" bg="green.500" onClick={() => placePiece(x, y)}>
+            <GridItem key={`${x}-${y}`} w="40px" h="40px" bg="green.500" onClick={() => placePiece(x, y)} display="flex" justifyContent="center" alignItems="center">
               {cell && <FaCircle color={cell === "black" ? "black" : "white"} size="30px" />}
             </GridItem>
           )),
@@ -207,6 +207,7 @@ const Index = () => {
           setBoard(initialBoard());
           setCurrentPlayer("black");
         }}
+        w="full"
       >
         Restart Game
       </Button>
@@ -217,6 +218,7 @@ const Index = () => {
           setIsAIEnabled(!isAIEnabled);
           setCurrentPlayer("black");
         }}
+        w="full"
       >
         {isAIEnabled ? "Disable AI" : "Enable AI"}
       </Button>

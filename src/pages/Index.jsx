@@ -157,7 +157,7 @@ const Index = () => {
       <Text fontSize="xl" mb={4}>
         Othello Game - Current Player: {currentPlayer.toUpperCase()}
       </Text>
-      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap={2} justifyItems="center" alignItems="center" p={5}>
+      <Grid templateColumns={`repeat(${boardSize}, 1fr)`} gap="1 2" justifyItems="center" alignItems="center" p={5}>
         {board.map((row, x) =>
           row.map((cell, y) => (
             <GridItem key={`${x}-${y}`} w="40px" h="40px" bg="green.500" onClick={() => placePiece(x, y)} display="flex" justifyContent="center" alignItems="center">

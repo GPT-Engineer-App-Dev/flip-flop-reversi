@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Grid, GridItem, Button, Text, useToast } from "@chakra-ui/react";
 import { FaCircle } from "react-icons/fa";
 
 const Index = () => {
+  const [isAIEnabled, setIsAIEnabled] = useState(false);
   const boardSize = 8;
   const initialBoard = () => {
     const mid = boardSize / 2;
@@ -53,7 +54,54 @@ const Index = () => {
     return valid;
   };
 
-  const placePiece = (x, y) => {
+  const simulateMove = (x, y, board, player) => {
+    let score = 0;
+    const directions = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ];
+    directions.forEach(([dx, dy]) => {
+      let i = x + dx,
+        j = y + dy,
+        potentialScore = 0;
+      while (i >= 0 && i < boardSize && j >= 0 && j < boardSize && board[i][j] === (player === "black" ? "white" : "black")) {
+        potentialScore++;
+        i += dx;
+        j += dy;
+      }
+      if (i >= 0 && i < boardSize && j >= 0 && j < boardSize && board[i][j] === player) {
+        score += potentialScore;
+      }
+    });
+    return score;
+  };
+
+  const aiMove = () => {
+    let maxScore = -1;
+    let bestMove = null;
+    for (let x = 0; x < boardSize; x++) {
+      for (let y = 0; y < boardSize; y++) {
+        if (isValidMove(x, y)) {
+          const score = simulateMove(x, y, board, currentPlayer);
+          if (score > maxScore) {
+            maxScore = score;
+            bestMove = { x, y };
+          }
+        }
+      }
+    }
+    if (bestMove) {
+      placePiece(bestMove.x, bestMove.y);
+    }
+  };
+
+  const placePiece = (x, y, isPlayer = true) => {
     if (!isValidMove(x, y)) {
       toast({
         title: "Invalid move",
@@ -95,7 +143,12 @@ const Index = () => {
     });
 
     setBoard(newBoard);
-    setCurrentPlayer(currentPlayer === "black" ? "white" : "black");
+    if (isPlayer) {
+      setCurrentPlayer(currentPlayer === "black" ? "white" : "black");
+      if (isAIEnabled && currentPlayer === "white") {
+        setTimeout(aiMove, 1000);
+      }
+    }
   };
 
   return (
@@ -112,8 +165,18 @@ const Index = () => {
           )),
         )}
       </Grid>
-      <Button mt={4} colorScheme="blue" onClick={() => setBoard(initialBoard())}>
+      <Button
+        mt={4}
+        colorScheme="blue"
+        onClick={() => {
+          setBoard(initialBoard());
+          setCurrentPlayer("black");
+        }}
+      >
         Restart Game
+      </Button>
+      <Button mt={4} colorScheme="teal" onClick={() => setIsAIEnabled(!isAIEnabled)}>
+        {isAIEnabled ? "Play against Human" : "Play against AI"}
       </Button>
     </Box>
   );
